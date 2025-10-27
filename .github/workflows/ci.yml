@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Check Markdown syntax
       run: |
@@ -45,7 +45,7 @@ jobs:
     needs: validate
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Extract and save dashboard files
       run: |
@@ -69,7 +69,7 @@ jobs:
         echo "Created dashboard.tar.gz"
         
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dashboard-files
         path: artifacts/dashboard.tar.gz
