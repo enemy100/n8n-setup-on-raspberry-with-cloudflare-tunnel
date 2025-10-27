@@ -68,9 +68,26 @@ jobs:
         tar -czf dashboard.tar.gz dashboard/
         echo "Created dashboard.tar.gz"
         
+    - name: Create full installation package
+      run: |
+        mkdir -p artifacts/install_package
+        cp SETUP_GUIDE.md artifacts/install_package/
+        cp README.md artifacts/install_package/
+        cp install.sh artifacts/install_package/
+        cd artifacts/install_package
+        tar -czf ../n8n-raspberry-complete.tar.gz .
+        cd ../..
+        ls -lh artifacts/*.tar.gz
+        
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: dashboard-files
         path: artifacts/dashboard.tar.gz
+        
+    - name: Upload complete package
+      uses: actions/upload-artifact@v4
+      with:
+        name: n8n-raspberry-complete
+        path: artifacts/n8n-raspberry-complete.tar.gz
 

@@ -21,6 +21,7 @@ docker/volumes/
 *.txt
 *.sh
 !monitorar.sh
+!install.sh
 
 # Documentação de economia (opcional)
 ECONOMIA_DISCOS.md
