@@ -3,6 +3,10 @@
 Complete automation setup with n8n running on Raspberry Pi with secure external access via Cloudflare Tunnel.
 
 <img width="1734" height="863" alt="image" src="https://github.com/user-attachments/assets/6ee45fec-3268-43fd-b062-906a8ff2eb77" />
+<img width="1903" height="543" alt="image" src="https://github.com/user-attachments/assets/40646c57-f90d-4360-be39-10883390476c" />
+<img width="1639" height="815" alt="image" src="https://github.com/user-attachments/assets/bfbc3ccc-6fc7-478e-a312-8e4d08d86bfa" />
+
+
 
 
 ## 📚 Documentation
