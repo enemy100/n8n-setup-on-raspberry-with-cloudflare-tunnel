@@ -323,7 +323,7 @@ Opens in the browser: login and authorize access.
 cloudflared tunnel create n8n-raspberry
 ```
 
-Save the tunnel ID that appears (e.g., `272918cb-4994-4a94-a386-6e309b67332e`)
+Save the tunnel ID that appears (e.g., `a1b2c3d4-e5f6-7890-abcd-ef1234567890`)
 
 ### Configure DNS Routes
 
@@ -409,7 +409,7 @@ sudo mkdir -p /etc/cloudflared
 sudo cp ~/.cloudflared/config.yml /etc/cloudflared/config.yml
 
 # Copy credentials file (replace with your tunnel ID!)
-# EXAMPLE: sudo cp ~/.cloudflared/272918cb-4994-4a94-a386-6e309b67332e.json /etc/cloudflared/
+# EXAMPLE: sudo cp ~/.cloudflared/a1b2c3d4-e5f6-7890-abcd-ef1234567890.json /etc/cloudflared/
 # Or copy all .json files:
 sudo cp ~/.cloudflared/*.json /etc/cloudflared/
 
