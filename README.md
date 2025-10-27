@@ -1,27 +1,27 @@
-# 🚀 n8n no Raspberry Pi com Cloudflare Tunnel
+# 🚀 n8n on Raspberry Pi with Cloudflare Tunnel
 
-Setup completo de automação com n8n rodando no Raspberry Pi com acesso externo seguro via Cloudflare Tunnel.
+Complete automation setup with n8n running on Raspberry Pi with secure external access via Cloudflare Tunnel.
 
 ## 📚 Documentation
 
 - **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete setup guide from zero (Docker, Cloudflare Tunnel, n8n)
 
-## 🎯 O que você vai ter
+## 🎯 What You'll Get
 
-- ✅ n8n rodando com acesso externo seguro
-- ✅ Cloudflare Tunnel (sem Port Forwarding necessário)
-- ✅ Portainer para gerenciamento Docker
-- ✅ Dashboard web de status do sistema
-- ✅ SMTP configurado para envio de emails
-- ✅ Monitoramento de recursos (CPU, RAM, Disco)
+- ✅ n8n running with secure external access
+- ✅ Cloudflare Tunnel (no Port Forwarding needed)
+- ✅ Portainer for Docker management
+- ✅ Web dashboard for system monitoring
+- ✅ SMTP configured for sending emails
+- ✅ Resource monitoring (CPU, RAM, Disk)
 
-## 🔧 Requisitos
+## 🔧 Requirements
 
 - Raspberry Pi 4
 - Ubuntu 24.04
 - Docker + Docker Compose
-- Conta Cloudflare gratuita
-- Domínio (opcional)
+- Free Cloudflare account
+- Domain (optional)
 
 ## 📖 How to Use
 
@@ -31,14 +31,14 @@ Setup completo de automação com n8n rodando no Raspberry Pi com acesso externo
 4. Access n8n via HTTPS
 5. In case of problems, check the "Troubleshooting" section
 
-## ⚠️ Importante
+## ⚠️ Important
 
 This guide assumes you have a working `docker-compose.yml`. If starting from scratch:
 - Follow Step 1 of SETUP_GUIDE.md to create a basic one
 - Adapt to your environment
 - **NEVER** commit `.env` or passwords!
 
-## 📊 Arquitetura
+## 📊 Architecture
 
 ```
 Internet (HTTPS)
@@ -48,25 +48,24 @@ Cloudflare (SSL + Tunnel)
 Traefik (Reverse Proxy)
     ↓
 ┌─────────────────┐
-│   n8n (automação)
-│   Portainer (gestão)
+│   n8n (automation)
+│   Portainer (management)
 │   Dashboard (status)
 └─────────────────┘
 ```
 
-## 📝 Licença
+## 📝 License
 
-Use livremente para seus projetos pessoais.
+Feel free to use for your personal projects.
 
 ## 💡 Tips
 
-- Faça backup regular dos workflows do n8n
-- Use Cloudflare Tunnel para acesso externo seguro
-- Monitore recursos via Portainer
-- Configure SMTP para notificações por email
+- Make regular backups of n8n workflows
+- Use Cloudflare Tunnel for secure external access
+- Monitor resources via Portainer
+- Configure SMTP for email notifications
 
 ---
 
-**Autor:** Baseado na implementação de @robson  
-**Domínio:** viajandoeimigrando.com.br
-
+**Author:** Based on implementation by @robson  
+**Domain:** viajandoeimigrando.com.br
