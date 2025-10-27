@@ -203,6 +203,22 @@ Save the file (Ctrl+O, Enter, Ctrl+X).
 
 ---
 
+## 🎨 Create Dashboard Files (Optional)
+
+The dashboard monitors your Raspberry Pi status in real-time. Create the files:
+
+```bash
+mkdir -p ~/Downloads/dashboard
+cd ~/Downloads/dashboard
+nano app.py
+```
+
+Paste the Python API code from the docker-compose section (it's already included above). Then create a simple `index.html` that accesses the API endpoint `/api/stats`.
+
+**Note:** For a complete dashboard HTML, you can find examples online or adapt one to your needs. The API endpoint returns JSON with CPU temp, memory, disk usage, uptime, load average, and active containers.
+
+---
+
 ## 🔧 Step 2: Install Docker
 
 ```bash
