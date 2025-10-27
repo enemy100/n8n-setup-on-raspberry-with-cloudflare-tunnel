@@ -25,7 +25,7 @@ jobs:
         echo "Creating temporary app.py for syntax validation..."
         mkdir -p test_dashboard
         # Extrair código Python do SETUP_GUIDE.md para validar
-        grep -A 100 "```python" SETUP_GUIDE.md | grep -B 100 "```" | grep -v "```" > test_dashboard/app.py || true
+        grep -A 100 '```python' SETUP_GUIDE.md | grep -B 100 '```' | grep -v '```' > test_dashboard/app.py || true
         if [ -s test_dashboard/app.py ]; then
           python3 -m py_compile test_dashboard/app.py
           echo "✓ Python syntax valid"
@@ -53,11 +53,11 @@ jobs:
         
         # Extrair e salvar app.py
         echo "Extracting app.py from documentation..."
-        awk '/```python$/,/```$/' SETUP_GUIDE.md | sed '/```python/d; /```$/d' > artifacts/dashboard/app.py || true
+        grep -A 200 '```python' SETUP_GUIDE.md | grep -B 200 '```' | grep -v '```python' | grep -v '^```' | tail -n +2 | head -n -1 > artifacts/dashboard/app.py || true
         
         # Extrair e salvar index.html
         echo "Extracting index.html from documentation..."
-        awk '/```html$/,/```$/' SETUP_GUIDE.md | sed '/```html/d; /```$/d' > artifacts/dashboard/index.html || true
+        grep -A 300 '```html' SETUP_GUIDE.md | grep -B 300 '```' | grep -v '```html' | grep -v '^```' | tail -n +2 | head -n -1 > artifacts/dashboard/index.html || true
         
         echo "Saved files:"
         ls -lh artifacts/dashboard/
