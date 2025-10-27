@@ -25,7 +25,7 @@ jobs:
         echo "Creating temporary app.py for syntax validation..."
         mkdir -p test_dashboard
         # Extrair código Python do SETUP_GUIDE.md para validar
-        grep -A 100 '```python' SETUP_GUIDE.md | grep -B 100 '```' | grep -v '```' > test_dashboard/app.py || true
+        awk '/```python$/,/```$/{if (!/```python$|^```$/){print}}' SETUP_GUIDE.md > test_dashboard/app.py || true
         if [ -s test_dashboard/app.py ]; then
           python3 -m py_compile test_dashboard/app.py
           echo "✓ Python syntax valid"
@@ -35,7 +35,7 @@ jobs:
       run: |
         echo "Checking HTML files..."
         # Extrair HTML do SETUP_GUIDE.md
-        grep -A 200 '```html' SETUP_GUIDE.md | grep -B 200 '```' | grep -v '```' > test_dashboard/index.html || true
+        awk '/```html$/,/```$/{if (!/```html$|^```$/){print}}' SETUP_GUIDE.md > test_dashboard/index.html || true
         if [ -s test_dashboard/index.html ]; then
           echo "✓ HTML file extracted"
         fi
@@ -53,11 +53,11 @@ jobs:
         
         # Extrair e salvar app.py
         echo "Extracting app.py from documentation..."
-        grep -A 200 '```python' SETUP_GUIDE.md | grep -B 200 '```' | grep -v '```python' | grep -v '^```' | tail -n +2 | head -n -1 > artifacts/dashboard/app.py || true
+        awk '/```python$/,/```$/{if (!/```python$|^```$/){print}}' SETUP_GUIDE.md > artifacts/dashboard/app.py || true
         
         # Extrair e salvar index.html
         echo "Extracting index.html from documentation..."
-        grep -A 300 '```html' SETUP_GUIDE.md | grep -B 300 '```' | grep -v '```html' | grep -v '^```' | tail -n +2 | head -n -1 > artifacts/dashboard/index.html || true
+        awk '/```html$/,/```$/{if (!/```html$|^```$/){print}}' SETUP_GUIDE.md > artifacts/dashboard/index.html || true
         
         echo "Saved files:"
         ls -lh artifacts/dashboard/
