@@ -207,15 +207,286 @@ Save the file (Ctrl+O, Enter, Ctrl+X).
 
 The dashboard monitors your Raspberry Pi status in real-time. Create the files:
 
+### Create app.py
+
 ```bash
 mkdir -p ~/Downloads/dashboard
 cd ~/Downloads/dashboard
 nano app.py
 ```
 
-Paste the Python API code from the docker-compose section (it's already included above). Then create a simple `index.html` that accesses the API endpoint `/api/stats`.
+Paste this complete content:
 
-**Note:** For a complete dashboard HTML, you can find examples online or adapt one to your needs. The API endpoint returns JSON with CPU temp, memory, disk usage, uptime, load average, and active containers.
+```python
+#!/usr/bin/env python3
+import os
+import subprocess
+import json
+from flask import Flask, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+def get_temp():
+    try:
+        temp = subprocess.check_output(['cat', '/host/sys/class/thermal/thermal_zone0/temp']).decode().strip()
+        return float(temp) / 1000
+    except:
+        return 0
+
+def get_memory():
+    try:
+        meminfo = subprocess.check_output(['cat', '/host/proc/meminfo']).decode()
+        mem_total = int([line for line in meminfo.split('\n') if 'MemTotal:' in line][0].split()[1]) / 1024 / 1024
+        mem_avail = int([line for line in meminfo.split('\n') if 'MemAvailable:' in line][0].split()[1]) / 1024 / 1024
+        mem_used = mem_total - mem_avail
+        return {'total': round(mem_total, 2), 'used': round(mem_used, 2), 'avail': round(mem_avail, 2), 'percent': round((mem_used / mem_total) * 100, 1)}
+    except:
+        return {'total': 0, 'used': 0, 'avail': 0, 'percent': 0}
+
+def get_disk():
+    try:
+        output = subprocess.check_output(['df', '-BG', '/']).decode()
+        parts = output.split('\n')[1].split()
+        used_gb = float(parts[2].replace('G', ''))
+        avail_gb = float(parts[3].replace('G', ''))
+        total_gb = used_gb + avail_gb
+        return {'used': round(used_gb, 1), 'avail': round(avail_gb, 1), 'total': round(total_gb, 1), 'percent': round((used_gb / total_gb) * 100, 1)}
+    except:
+        return {'used': 0, 'avail': 0, 'total': 0, 'percent': 0}
+
+def get_uptime():
+    try:
+        uptime_seconds = float(subprocess.check_output(['cat', '/host/proc/uptime']).decode().split()[0])
+        hours = int(uptime_seconds / 3600)
+        return f"{hours} hours"
+    except:
+        return "N/A"
+
+def get_load():
+    try:
+        load = subprocess.check_output(['cat', '/host/proc/loadavg']).decode().strip()
+        return load.split()[0]
+    except:
+        return "0.00"
+
+def get_containers():
+    try:
+        ps = subprocess.check_output(['docker', 'ps', '--format', '{{.Names}}']).decode()
+        return len(ps.strip().split('\n'))
+    except:
+        return 0
+
+@app.route('/')
+def stats():
+    return jsonify({
+        'temp': get_temp(),
+        'memory': get_memory(),
+        'disk': get_disk(),
+        'uptime': get_uptime(),
+        'load': get_load(),
+        'containers': get_containers()
+    })
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+Save (Ctrl+O, Enter, Ctrl+X).
+
+### Create index.html
+
+```bash
+nano index.html
+```
+
+Paste this simplified dashboard HTML:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Status</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { color: white; text-align: center; margin-bottom: 30px; font-size: 2.5em; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .stat-label { font-weight: 600; color: #555; }
+        .stat-value { font-weight: bold; color: #667eea; }
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .refresh-btn {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .refresh-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Raspberry Pi Status</h1>
+        <button class="refresh-btn" onclick="updateStats()">🔄 Refresh</button>
+        
+        <div class="cards">
+            <div class="card">
+                <h2>🌡️ Temperature</h2>
+                <div class="stat">
+                    <span class="stat-label">CPU:</span>
+                    <span class="stat-value" id="temp">-</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="temp-bar" style="width: 0%">-</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>💾 Memory RAM</h2>
+                <div class="stat">
+                    <span class="stat-label">Used:</span>
+                    <span class="stat-value" id="ram-used">-</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Available:</span>
+                    <span class="stat-value" id="ram-avail">-</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ram-bar">-</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>💿 Disk</h2>
+                <div class="stat">
+                    <span class="stat-label">Used:</span>
+                    <span class="stat-value" id="disk-used">-</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Free:</span>
+                    <span class="stat-value" id="disk-avail">-</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="disk-bar">-</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔧 System</h2>
+                <div class="stat">
+                    <span class="stat-label">Uptime:</span>
+                    <span class="stat-value" id="uptime">-</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Load:</span>
+                    <span class="stat-value" id="load">-</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Containers:</span>
+                    <span class="stat-value" id="containers">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function updateStats() {
+            try {
+                const response = await fetch('https://' + window.location.hostname + '/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('temp').textContent = data.temp.toFixed(1) + '°C';
+                const tempPercent = ((data.temp - 30) / 50 * 100);
+                document.getElementById('temp-bar').style.width = Math.min(100, tempPercent) + '%';
+                document.getElementById('temp-bar').textContent = data.temp.toFixed(1) + '°C';
+                
+                document.getElementById('ram-used').textContent = data.memory.used.toFixed(1) + ' GiB';
+                document.getElementById('ram-avail').textContent = data.memory.avail.toFixed(1) + ' GiB';
+                document.getElementById('ram-bar').style.width = data.memory.percent + '%';
+                document.getElementById('ram-bar').textContent = data.memory.percent.toFixed(1) + '%';
+                
+                document.getElementById('disk-used').textContent = data.disk.used.toFixed(1) + ' GB';
+                document.getElementById('disk-avail').textContent = data.disk.avail.toFixed(1) + ' GB';
+                document.getElementById('disk-bar').style.width = data.disk.percent + '%';
+                document.getElementById('disk-bar').textContent = data.disk.percent.toFixed(1) + '%';
+                
+                document.getElementById('uptime').textContent = data.uptime;
+                document.getElementById('load').textContent = data.load;
+                document.getElementById('containers').textContent = data.containers + ' active';
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        updateStats();
+        setInterval(updateStats, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>
+```
+
+Save (Ctrl+O, Enter, Ctrl+X).
+
+**After creating both files, proceed to the next step.**
 
 ---
 
