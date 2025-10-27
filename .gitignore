@@ -1,0 +1,40 @@
+# Arquivos sensíveis - NUNCA COMMITAR!
+.env
+*.env
+.env.*
+
+# Docker compose com senhas
+docker-compose.yml
+
+# Dados dos containers
+postgres_data/
+redis_data/
+portainer_data/
+n8n_data/
+filebrowser_data/
+docker/volumes/
+
+# Arquivos temporários e scripts
+*.log
+*.sh~
+*.tmp
+*.txt
+*.sh
+!monitorar.sh
+
+# Documentação de economia (opcional)
+ECONOMIA_DISCOS.md
+
+# Configurações locais
+config.local.*
+credentials.*
+
+# Logs
+logs/
+*.log.*
+
+# Backup
+*.backup
+*.bak
+*~
+
