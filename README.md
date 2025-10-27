@@ -76,3 +76,10 @@ Feel free to use for your personal projects.
 
 **Author:** Based on implementation by @robson  
 **Domain:** viajandoeimigrando.com.br
+
+## 🎯 Automated CI/CD
+
+This project uses GitHub Actions to automatically validate code and create artifacts.
+- ✓ Python syntax validation
+- ✓ HTML validation
+- ✓ Auto-generate dashboard files
